@@ -105,6 +105,7 @@ body {
 .cards {
   display: grid;
   gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
 }
 
 .card {
@@ -116,6 +117,15 @@ body {
   background: linear-gradient(180deg, rgba(34, 34, 34, 0.92), rgba(26, 26, 26, 0.92));
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: var(--shadow);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+  transform-origin: center;
+}
+
+.card:hover,
+.card:focus-within {
+  transform: scale(1.02);
+  border-color: rgba(251, 191, 36, 0.35);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.16), var(--shadow);
 }
 
 .card__time {
@@ -312,5 +322,14 @@ button:hover,
 
   .form__grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  button,
+  .tab {
+    transition: none;
+    transform: none;
   }
 }

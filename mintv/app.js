@@ -375,6 +375,147 @@
     });
   }
 
+  function getActiveViewElement() {
+    return elements.views.find((v) => !v.hidden) ?? elements.views[0];
+  }
+
+  function focusActiveTab() {
+    const activeTab = elements.tabs.find((t) => t.getAttribute("aria-current") === "page") ?? elements.tabs[0];
+    activeTab.focus();
+  }
+
+  function focusFirstInView(viewName) {
+    if (viewName === "today") {
+      const firstStart = elements.todayList.querySelector('button[data-action="start"]');
+      if (firstStart) firstStart.focus();
+      else elements.quickAdd.focus();
+      return;
+    }
+    if (viewName === "week") {
+      const firstStart = elements.weekList.querySelector('button[data-action="start"]');
+      if (firstStart) firstStart.focus();
+      else focusActiveTab();
+      return;
+    }
+    if (viewName === "add") {
+      elements.name.focus();
+    }
+  }
+
+  function getCenter(el) {
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function findNearestByDirection(fromEl, candidates, direction) {
+    const from = getCenter(fromEl);
+    let best = null;
+    let bestScore = Number.POSITIVE_INFINITY;
+
+    candidates.forEach((el) => {
+      if (el === fromEl) return;
+      const c = getCenter(el);
+      const dx = c.x - from.x;
+      const dy = c.y - from.y;
+
+      const isCandidate =
+        (direction === "up" && dy < -2) ||
+        (direction === "down" && dy > 2) ||
+        (direction === "left" && dx < -2) ||
+        (direction === "right" && dx > 2);
+
+      if (!isCandidate) return;
+
+      const score =
+        direction === "up" || direction === "down"
+          ? Math.abs(dy) * 1000 + Math.abs(dx)
+          : Math.abs(dx) * 1000 + Math.abs(dy);
+
+      if (score < bestScore) {
+        bestScore = score;
+        best = el;
+      }
+    });
+
+    return best;
+  }
+
+  function setupRemoteNavigation() {
+    document.addEventListener("keydown", (e) => {
+      const key = e.key;
+      if (key !== "ArrowUp" && key !== "ArrowDown" && key !== "ArrowLeft" && key !== "ArrowRight") return;
+
+      const active = document.activeElement;
+      if (!active) return;
+      if (active.matches("input, select, textarea")) return;
+
+      const viewEl = getActiveViewElement();
+      const viewName = viewEl?.dataset?.view ?? "today";
+
+      if (active.classList?.contains("tab")) {
+        if (key === "ArrowDown") {
+          e.preventDefault();
+          focusFirstInView(active.dataset.view ?? viewName);
+        }
+        return;
+      }
+
+      if (active === elements.quickAdd) {
+        if (key === "ArrowDown") {
+          e.preventDefault();
+          focusFirstInView("today");
+        } else if (key === "ArrowUp") {
+          e.preventDefault();
+          focusActiveTab();
+        }
+        return;
+      }
+
+      const actionButton = active.closest?.(".card") ? active : null;
+      const button = actionButton?.matches?.("button[data-action]") ? actionButton : null;
+      if (!button) {
+        if (key === "ArrowUp") {
+          e.preventDefault();
+          focusActiveTab();
+        } else if (key === "ArrowDown") {
+          e.preventDefault();
+          focusFirstInView(viewName);
+        }
+        return;
+      }
+
+      const card = button.closest(".card");
+      const buttonsInCard = Array.from(card.querySelectorAll("button[data-action]"));
+      const indexInCard = buttonsInCard.indexOf(button);
+      const direction = key === "ArrowUp" ? "up" : key === "ArrowDown" ? "down" : key === "ArrowLeft" ? "left" : "right";
+
+      if (direction === "left" && indexInCard > 0) {
+        e.preventDefault();
+        buttonsInCard[indexInCard - 1].focus();
+        return;
+      }
+      if (direction === "right" && indexInCard >= 0 && indexInCard < buttonsInCard.length - 1) {
+        e.preventDefault();
+        buttonsInCard[indexInCard + 1].focus();
+        return;
+      }
+
+      const action = button.dataset.action;
+      const candidates = Array.from(viewEl.querySelectorAll(`button[data-action="${action}"]`));
+      const next = findNearestByDirection(button, candidates, direction);
+      if (next) {
+        e.preventDefault();
+        next.focus();
+        return;
+      }
+
+      if (direction === "up") {
+        e.preventDefault();
+        focusActiveTab();
+      }
+    });
+  }
+
   function startLiveTicker() {
     setInterval(() => {
       rerenderAll();
@@ -386,6 +527,7 @@
     elements.weekday.value = String(getTodayIndex());
     setupTabs();
     setupForm();
+    setupRemoteNavigation();
 
     await seedFromJsonIfNeeded();
     programs = readStorage();

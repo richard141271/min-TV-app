@@ -20,6 +20,7 @@ python3 -m http.server 5173
 - **LIVE NÅ**: vises når et program er innenfor ±30 minutter fra nåtid.
 - **Legg til**: legg inn programnavn, tjeneste, ukedag, klokkeslett og startlink.
 - **Rediger / Slett**: tilgjengelig på hvert programkort.
+- **Fjernkontroll**: bruk piltaster (↑ ↓ ← →) for å flytte fokus.
 
 All data lagres i **LocalStorage** i nettleseren. Ved første oppstart seedes eksempeldata fra `data.json` (kun hvis du ikke allerede har data lagret).
 
@@ -36,6 +37,15 @@ All data lagres i **LocalStorage** i nettleseren. Ved første oppstart seedes ek
 1. Importer GitHub-repoet i Vercel.
 2. Framework preset: “Other”.
 3. Output/public directory: `mintv`
+
+### GitHub Pages
+
+1. Repo → **Settings** → **Pages**
+2. Source: “Deploy from a branch”
+3. Branch: `main` og Folder: `/(root)`
+4. Åpne `https://<brukernavn>.github.io/<repo>/`
+
+Appen ligger i `mintv/`, og repo-roten har en `index.html` som videresender til `./mintv/`.
 
 ## GitHub (push)
 
