@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Min TV</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand__title">Min TV</div>
+          <div class="brand__subtitle" id="todayLabel"></div>
+        </div>
+        <nav class="tabs" aria-label="Visninger">
+          <button class="tab" type="button" data-view="today" aria-current="page">I dag</button>
+          <button class="tab" type="button" data-view="week">Uke</button>
+          <button class="tab" type="button" data-view="add">Legg til</button>
+        </nav>
+      </header>
+
+      <main class="main" id="main">
+        <section class="view" id="view-today" data-view="today" aria-label="Min TV i dag">
+          <div class="view__header">
+            <h1 class="view__title">Min TV i dag</h1>
+            <button class="primary" type="button" id="quickAdd">Legg til program</button>
+          </div>
+          <div class="cards" id="todayList" role="list"></div>
+          <div class="empty" id="todayEmpty" hidden>
+            Ingen programmer for i dag. Trykk “Legg til program” for å starte.
+          </div>
+        </section>
+
+        <section class="view" id="view-week" data-view="week" aria-label="Ukesoversikt" hidden>
+          <div class="view__header">
+            <h1 class="view__title">Ukesoversikt</h1>
+          </div>
+          <div class="week" id="weekList"></div>
+        </section>
+
+        <section class="view" id="view-add" data-view="add" aria-label="Legg til program" hidden>
+          <div class="view__header">
+            <h1 class="view__title" id="formTitle">Legg til program</h1>
+          </div>
+          <form class="form" id="programForm">
+            <div class="form__grid">
+              <label class="field">
+                <span class="field__label">Programnavn</span>
+                <input class="field__input" id="name" name="name" type="text" autocomplete="off" required />
+              </label>
+
+              <label class="field">
+                <span class="field__label">Kanal / tjeneste</span>
+                <input class="field__input" id="service" name="service" type="text" autocomplete="off" required />
+              </label>
+
+              <label class="field">
+                <span class="field__label">Ukedag</span>
+                <select class="field__input" id="weekday" name="weekday" required></select>
+              </label>
+
+              <label class="field">
+                <span class="field__label">Klokkeslett</span>
+                <input class="field__input" id="time" name="time" type="time" required />
+              </label>
+
+              <label class="field field--wide">
+                <span class="field__label">Startlink</span>
+                <input class="field__input" id="link" name="link" type="url" inputmode="url" autocomplete="off" required />
+              </label>
+            </div>
+
+            <div class="form__actions">
+              <button class="primary" type="submit" id="saveBtn">Lagre</button>
+              <button class="secondary" type="button" id="cancelEdit" hidden>Avbryt</button>
+              <button class="danger" type="button" id="deleteFromForm" hidden>Slett</button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <template id="programCardTemplate">
+      <article class="card" role="listitem">
+        <div class="card__left">
+          <div class="card__time"></div>
+        </div>
+        <div class="card__main">
+          <div class="card__top">
+            <div class="card__title"></div>
+            <div class="badge" hidden>LIVE NÅ</div>
+          </div>
+          <div class="card__meta"></div>
+        </div>
+        <div class="card__actions">
+          <button class="primary" type="button" data-action="start">Start</button>
+          <button class="secondary" type="button" data-action="edit">Rediger</button>
+          <button class="danger" type="button" data-action="delete">Slett</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

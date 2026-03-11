@@ -1,0 +1,25 @@
+{
+  "programs": [
+    {
+      "name": "Dagsrevyen",
+      "service": "NRK",
+      "weekday": 1,
+      "time": "19:00",
+      "link": "https://tv.nrk.no/"
+    },
+    {
+      "name": "Farmen",
+      "service": "TV2",
+      "weekday": 1,
+      "time": "20:00",
+      "link": "https://play.tv2.no/"
+    },
+    {
+      "name": "YouTube",
+      "service": "YouTube",
+      "weekday": 1,
+      "time": "21:00",
+      "link": "https://www.youtube.com/"
+    }
+  ]
+}
