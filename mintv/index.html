@@ -43,7 +43,7 @@
           <div class="view__header">
             <h1 class="view__title" id="formTitle">Legg til program</h1>
           </div>
-          <form class="form" id="programForm">
+          <form class="form" id="programForm" novalidate>
             <div class="form__grid">
               <label class="field">
                 <span class="field__label">Programnavn</span>
@@ -67,7 +67,16 @@
 
               <label class="field field--wide">
                 <span class="field__label">Startlink</span>
-                <input class="field__input" id="link" name="link" type="url" inputmode="url" autocomplete="off" required />
+                <input
+                  class="field__input"
+                  id="link"
+                  name="link"
+                  type="url"
+                  inputmode="url"
+                  autocomplete="off"
+                  placeholder="https://www.tv2.no"
+                  required
+                />
               </label>
             </div>
 

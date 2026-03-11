@@ -63,6 +63,24 @@
     return String(a.time).localeCompare(String(b.time));
   }
 
+  function normalizeLink(value) {
+    let raw = String(value ?? "").trim();
+    if (!raw) return null;
+
+    raw = raw.replace(/^https\/\//i, "https://");
+    raw = raw.replace(/^http\/\//i, "http://");
+    if (raw.startsWith("//")) raw = `https:${raw}`;
+    if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) raw = `https://${raw}`;
+
+    try {
+      const url = new URL(raw);
+      if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+      return url.toString();
+    } catch {
+      return null;
+    }
+  }
+
   function readStorage() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -302,9 +320,16 @@
     const service = String(elements.service.value).trim();
     const weekday = Number(elements.weekday.value);
     const time = normalizeTime(elements.time.value);
-    const link = String(elements.link.value).trim();
+    const normalizedLink = normalizeLink(elements.link.value);
 
-    if (!name || !service || !Number.isFinite(weekday) || !time || !link) return;
+    elements.name.setCustomValidity(name ? "" : "Skriv inn programnavn.");
+    elements.service.setCustomValidity(service ? "" : "Skriv inn tjeneste.");
+    elements.weekday.setCustomValidity(Number.isFinite(weekday) ? "" : "Velg ukedag.");
+    elements.time.setCustomValidity(time ? "" : "Velg klokkeslett.");
+    elements.link.setCustomValidity(normalizedLink ? "" : "Skriv inn en gyldig nettadresse (f.eks. https://www.tv2.no).");
+
+    const ok = elements.programForm.reportValidity();
+    if (!ok) return;
 
     const next = {
       id: editingId ?? cryptoId(),
@@ -312,7 +337,7 @@
       service,
       weekday,
       time,
-      link
+      link: normalizedLink
     };
 
     const existingIndex = programs.findIndex((p) => p.id === next.id);
